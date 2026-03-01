@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Loan Approval  Prediction Admin Dashboard</h1>
+
+    <div class="cards">
+        <div class="card total">
+            <h3>Total Predictions</h3>
+            <p>{{ total | default(0) }}</p>
+        </div>
+
+        <div class="card approved">
+            <h3>Approved</h3>
+            <p>{{ approved | default(0) }}</p>
+        </div>
+
+        <div class="card rejected">
+            <h3>Rejected</h3>
+            <p>{{ rejected | default(0) }}</p>
+        </div>
+
+        <div class="card accuracy">
+            <h3>Model Accuracy</h3>
+            <p>{{ accuracy | default(0) }}%</p>
+        </div>
+    </div>
+
+    <div class="charts">
+        <canvas id="pieChart"></canvas>
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <h2>Prediction Logs</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if tables %}
+            {% for row in tables %}
+            <tr>
+                <td>{{ row["timestamp"] }}</td>
+                <td class="{{ row["result"] | lower }}">
+                    {{ row["result"] }}
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">No predictions yet</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+</div>
+
+<script id="chart-data" type="application/json">
+{
+    "approved": {{ approved | default(0) | tojson }},
+    "rejected": {{ rejected | default(0) | tojson }}
+}
+</script>
+
+<script>
+const chartData = JSON.parse(
+    document.getElementById("chart-data").textContent
+);
+
+const approved = chartData.approved;
+const rejected = chartData.rejected;
+
+// PIE CHART
+new Chart(document.getElementById("pieChart"), {
+    type: 'pie',
+    data: {
+        labels: ['Approved', 'Rejected'],
+        datasets: [{
+            data: [approved, rejected],
+            backgroundColor: ['#19b155', '#eb0505']
+        }]
+    }
+});
+
+// BAR CHART
+new Chart(document.getElementById("barChart"), {
+    type: 'bar',
+    data: {
+        labels: ['Approved', 'Rejected'],
+        datasets: [{
+            label: 'Prediction Count',
+            data: [approved, rejected],
+            backgroundColor: ['#19b155', '#eb0505']
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

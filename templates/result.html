@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #040b29, #17126f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .approved {
+            color: #27ae60;
+        }
+
+        .rejected {
+            color: #c0392b;
+        }
+
+        .icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .back {
+            background-color: #3498db;
+        }
+
+        .admin {
+            background-color: #2c3e50;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    {% if result == "Approved" %}
+        <div class="icon approved">✅</div>
+        <h1 class="approved">Loan Approved</h1>
+    {% else %}
+        <div class="icon rejected">❌</div>
+        <h1 class="rejected">Loan Rejected</h1>
+    {% endif %}
+
+    <br>
+
+    <a href="/" class="btn back">⬅ Go Back</a>
+    <a href="/admin" class="btn admin">📊 Admin Dashboard</a>
+
+</div>
+
+</body>
+</html>
