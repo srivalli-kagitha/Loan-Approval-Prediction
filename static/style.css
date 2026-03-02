@@ -1,0 +1,80 @@
+/* Reset default margin */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Background */
+body {
+    height: 200vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #133d67 0%, #041f38 40%, #082f5f 100%);
+}
+
+/* Main Container */
+form {
+    background: white;
+    padding: 30px 30px;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    width: 400px;
+}
+
+/* Heading */
+h2 {
+    position: absolute;
+    top: 2px;
+    text-align: center;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Labels */
+form label {
+    font-weight: 600;
+}
+
+/* Inputs & Select */
+input[type="number"],
+select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+/* Focus Effect */
+input[type="number"]:focus,
+select:focus {
+    border-color: #061e65;
+    outline: none;
+    box-shadow: 0 0 5px rgba(14, 118, 245, 0.5);
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #0b2f37, #4d839c);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
