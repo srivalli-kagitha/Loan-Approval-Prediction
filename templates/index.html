@@ -1,66 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loan Approval Prediction</title>
+    <title>Loan Approval Predictor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Loan Approval Prediction</h2>
+
+<div class="hero">
+    <h1>🏦 Loan Approval Predictor</h1>
+    <p>Machine Learning Based Loan Approval Prediction</p>
+</div>
+
+<div class="form-container">
 
     <form action="/predict" method="post">
 
-        Gender:
-        <select name="Gender">
-            <option>Male</option>
-            <option>Female</option>
-        </select><br><br>
+        <h2>Loan Application Form</h2>
 
-        Married:
-        <select name="Married">
-            <option>Yes</option>
-            <option>No</option>
-        </select><br><br>
+        <div class="grid">
 
-        Dependents:
-        <select name="Dependents">
-            <option>0</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3+</option>
-        </select><br><br>
+            <div>
+                <label>Number of Dependents</label>
+                <select name="no_of_dependents">
+                    <option>0</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
 
-        Education:
-        <select name="Education">
-            <option>Graduate</option>
-            <option>Not Graduate</option>
-        </select><br><br>
+            <div>
+                <label>Education</label>
+                <select name="education">
+                    <option>Graduate</option>
+                    <option>Not Graduate</option>
+                </select>
+            </div>
 
-        Self Employed:
-        <select name="Self_Employed">
-            <option>Yes</option>
-            <option>No</option>
-        </select><br><br>
+            <div>
+                <label>Self Employed</label>
+                <select name="self_employed">
+                    <option>Yes</option>
+                    <option>No</option>
+                </select>
+            </div>
 
-        Applicant Income: <input type="number" name="ApplicantIncome"><br><br>
-        Coapplicant Income: <input type="number" name="CoapplicantIncome"><br><br>
-        Loan Amount: <input type="number" name="LoanAmount"><br><br>
-        Loan Term: <input type="number" name="Loan_Amount_Term"><br><br>
-        Credit History:
-        <select name="Credit_History">
-            <option value="1">Good</option>
-            <option value="0">Bad</option>
-        </select><br><br>
+            <div>
+                <label>Annual Income</label>
+                <input type="number" name="income_annum" required>
+            </div>
 
-        Property Area:
-        <select name="Property_Area">
-            <option>Urban</option>
-            <option>Semiurban</option>
-            <option>Rural</option>
-        </select><br><br>
+            <div>
+                <label>Loan Amount</label>
+                <input type="number" name="loan_amount" required>
+            </div>
 
-        <button type="submit">Predict</button>
+            <div>
+                <label>Loan Term (Months)</label>
+                <input type="number" name="loan_term" required>
+            </div>
+
+            <div>
+                <label>CIBIL Score</label>
+                <input type="number" name="cibil_score" required>
+            </div>
+
+            <div>
+                <label>Residential Assets</label>
+                <input type="number" name="residential_assets_value" required>
+            </div>
+
+            <div>
+                <label>Commercial Assets</label>
+                <input type="number" name="commercial_assets_value" required>
+            </div>
+
+            <div>
+                <label>Luxury Assets</label>
+                <input type="number" name="luxury_assets_value" required>
+            </div>
+
+            <div>
+                <label>Bank Assets</label>
+                <input type="number" name="bank_asset_value" required>
+            </div>
+
+        </div>
+
+        <button type="submit">Predict Loan Approval</button>
 
     </form>
+
+</div>
+
 </body>
 </html>
-

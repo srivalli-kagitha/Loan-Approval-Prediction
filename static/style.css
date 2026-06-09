@@ -1,80 +1,193 @@
-/* Reset default margin */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Background */
-body {
-    height: 200vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at center, #133d67 0%, #041f38 40%, #082f5f 100%);
+/* =========================
+   BODY
+========================= */
+
+body{
+    min-height:100vh;
+    background:linear-gradient(
+        135deg,
+        #061c3f 0%,
+        #0b4f9c 50%,
+        #0f6bd6 100%
+    );
+    padding:30px;
 }
 
-/* Main Container */
-form {
-    background: white;
-    padding: 30px 30px;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    width: 400px;
+/* =========================
+   HERO SECTION
+========================= */
+
+.hero{
+    text-align:center;
+    margin-bottom:35px;
 }
 
-/* Heading */
-h2 {
-    position: absolute;
-    top: 2px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
+.hero h1{
+    color:white;
+    font-size:48px;
+    margin-bottom:10px;
+    font-weight:700;
 }
 
-/* Labels */
-form label {
-    font-weight: 600;
+.hero p{
+    color:white;
+    font-size:18px;
+    opacity:0.85;
 }
 
-/* Inputs & Select */
-input[type="number"],
-select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    transition: 0.3s;
-    font-size: 14px;
+/* =========================
+   FORM CONTAINER
+========================= */
+
+.form-container{
+    display:flex;
+    justify-content:center;
+    width:100%;
 }
 
-/* Focus Effect */
-input[type="number"]:focus,
-select:focus {
-    border-color: #061e65;
-    outline: none;
-    box-shadow: 0 0 5px rgba(14, 118, 245, 0.5);
+/* =========================
+   FORM CARD
+========================= */
+
+form{
+    width:1000px;
+    max-width:95%;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:
+        0 15px 40px rgba(0,0,0,0.25);
 }
 
-/* Button */
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(45deg, #0b2f37, #4d839c);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s ease;
+/* =========================
+   FORM TITLE
+========================= */
+
+form h2{
+    text-align:center;
+    color:#0b4f9c;
+    margin-bottom:30px;
+    font-size:32px;
 }
 
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+/* =========================
+   GRID LAYOUT
+========================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+/* =========================
+   LABELS
+========================= */
+
+label{
+    display:block;
+    margin-bottom:8px;
+    color:#222;
+    font-weight:600;
+    font-size:15px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+input,
+select{
+    width:100%;
+    padding:14px;
+    border:1px solid #d5d5d5;
+    border-radius:10px;
+    font-size:15px;
+    transition:0.3s;
+}
+
+/* =========================
+   INPUT FOCUS
+========================= */
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#0b4f9c;
+    box-shadow:
+        0 0 0 4px rgba(11,79,156,0.15);
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+button{
+    width:100%;
+    margin-top:30px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(
+        45deg,
+        #0b4f9c,
+        #0f6bd6
+    );
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+/* =========================
+   BUTTON HOVER
+========================= */
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    body{
+        padding:15px;
+    }
+
+    .hero h1{
+        font-size:32px;
+    }
+
+    .hero p{
+        font-size:15px;
+    }
+
+    form{
+        padding:25px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    form h2{
+        font-size:24px;
+    }
 }

@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import pickle
 import shap
 import matplotlib.pyplot as plt
@@ -9,176 +8,277 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
+
 from imblearn.over_sampling import SMOTE
 
 # -----------------------
 # Load Dataset
 # -----------------------
+
 df = pd.read_csv("loan_data.csv")
-df.drop("Loan_ID", axis=1, inplace=True, errors="ignore")
-df.fillna(df.mode().iloc[0], inplace=True)
+
+df.columns = df.columns.str.strip()
+
+print("Columns in dataset:", df.columns)
+
+# -----------------------
+# Clean Target Column
+# -----------------------
+
+df["loan_status"] = df["loan_status"].str.strip().str.lower()
+
+df["loan_status"] = df["loan_status"].map({
+    "approved": 1,
+    "rejected": 0
+})
+
+df = df.dropna(subset=["loan_status"])
 
 # -----------------------
 # Feature Engineering
 # -----------------------
-df["TotalIncome"] = df["ApplicantIncome"] + df["CoapplicantIncome"]
-df["EMI"] = df["LoanAmount"] / df["Loan_Amount_Term"]
-df["DebtToIncomeRatio"] = df["LoanAmount"] / df["TotalIncome"]
+
+df["emi"] = df["loan_amount"] / df["loan_term"]
+
+df["debt_to_income"] = (
+    df["loan_amount"] /
+    df["income_annum"]
+)
+
+df["total_assets"] = (
+    df["residential_assets_value"]
+    + df["commercial_assets_value"]
+    + df["luxury_assets_value"]
+    + df["bank_asset_value"]
+)
 
 # -----------------------
-# Encode Target
+# Features & Target
 # -----------------------
-df["Loan_Status"] = df["Loan_Status"].map({"Y": 1, "N": 0})
 
-X = df.drop("Loan_Status", axis=1)
-y = df["Loan_Status"]
+X = df.drop(
+    ["loan_status", "loan_id"],
+    axis=1
+)
+
+y = df["loan_status"]
 
 # -----------------------
 # Column Transformer
 # -----------------------
-categorical_cols = X.select_dtypes(include=["object", "string"]).columns
-numeric_cols = X.select_dtypes(exclude=["object", "string"]).columns
+
+categorical_cols = X.select_dtypes(
+    include=["object", "string"]
+).columns
+
+numeric_cols = X.select_dtypes(
+    exclude=["object", "string"]
+).columns
 
 preprocessor = ColumnTransformer([
-    ("num", StandardScaler(), numeric_cols),
-    ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols)
+    (
+        "num",
+        StandardScaler(),
+        numeric_cols
+    ),
+    (
+        "cat",
+        OneHotEncoder(
+            handle_unknown="ignore"
+        ),
+        categorical_cols
+    )
 ])
 
 # -----------------------
-# Train-Test Split
+# Train Test Split
 # -----------------------
+
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
 )
 
-# Fit transformer
-X_train_processed = preprocessor.fit_transform(X_train)
-X_test_processed = preprocessor.transform(X_test)
+# -----------------------
+# Preprocessing
+# -----------------------
+
+X_train_processed = preprocessor.fit_transform(
+    X_train
+)
+
+X_test_processed = preprocessor.transform(
+    X_test
+)
 
 # -----------------------
-# Handle Imbalance (SMOTE)
+# Handle Imbalance
 # -----------------------
+
 sm = SMOTE(random_state=42)
+
 X_train_resampled, y_train_resampled = sm.fit_resample(
-    X_train_processed, y_train
+    X_train_processed,
+    y_train
 )
 
 # -----------------------
-# Models
+# Logistic Regression
 # -----------------------
-models = {
-    "Logistic Regression": LogisticRegression(max_iter=2000),
-    "Random Forest": RandomForestClassifier(random_state=42),
-    "SVM": SVC(probability=True, random_state=42),
-    "XGBoost": XGBClassifier(
-        eval_metric="logloss",
-        random_state=42
-    )
-}
 
-results = {}
-best_model = None
-best_auc = 0
+model = LogisticRegression(
+    max_iter=2000
+)
+
+model.fit(
+    X_train_resampled,
+    y_train_resampled
+)
 
 # -----------------------
-# Train & Evaluate
+# Predictions
 # -----------------------
-for name, model in models.items():
-    model.fit(X_train_resampled, y_train_resampled)
 
-    y_pred = model.predict(X_test_processed)
-    y_prob = model.predict_proba(X_test_processed)[:, 1]
+y_pred = model.predict(
+    X_test_processed
+)
 
-    acc = accuracy_score(y_test, y_pred)
-    auc = roc_auc_score(y_test, y_prob)
+y_prob = model.predict_proba(
+    X_test_processed
+)[:, 1]
 
-    results[name] = acc
-
-    print(f"{name} Accuracy: {acc:.4f}")
-    print(f"{name} ROC-AUC: {auc:.4f}")
-    print("-" * 40)
-
-    if auc > best_auc:
-        best_auc = auc
-        best_model = model
-
-print(f"✅ Best Model Selected (Based on AUC): {best_model}")
-
-# -----------------------
-# Save Model & Preprocessor
-# -----------------------
-pickle.dump(best_model, open("best_model.pkl", "wb"))
-pickle.dump(preprocessor, open("pipeline.pkl", "wb"))
-
-# -----------------------
-# Accuracy Comparison Plot
-# -----------------------
-plt.figure()
-plt.bar(results.keys(), results.values())
-plt.xticks(rotation=45)
-plt.title("Model Accuracy Comparison")
-plt.tight_layout()
-plt.savefig("accuracy_comparison.png")
-plt.close()
-
-# Save best model accuracy
-best_accuracy = accuracy_score(
+accuracy = accuracy_score(
     y_test,
-    best_model.predict(X_test_processed)
+    y_pred
 )
 
-with open("model_metrics.pkl", "wb") as f:
-    pickle.dump({"accuracy": best_accuracy, "roc_auc": best_auc}, f)
+roc_auc = roc_auc_score(
+    y_test,
+    y_prob
+)
+
+print(
+    f"Logistic Regression Accuracy: {accuracy:.4f}"
+)
+
+print(
+    f"Logistic Regression ROC-AUC: {roc_auc:.4f}"
+)
+
+# -----------------------
+# Save Model
+# -----------------------
+
+pickle.dump(
+    model,
+    open("best_model.pkl", "wb")
+)
+
+pickle.dump(
+    preprocessor,
+    open("pipeline.pkl", "wb")
+)
+
+# -----------------------
+# Save Metrics
+# -----------------------
+
+with open(
+    "model_metrics.pkl",
+    "wb"
+) as f:
+
+    pickle.dump(
+        {
+            "accuracy": accuracy,
+            "roc_auc": roc_auc
+        },
+        f
+    )
 
 # -----------------------
 # ROC Curve
 # -----------------------
-y_prob = best_model.predict_proba(X_test_processed)[:, 1]
-fpr, tpr, _ = roc_curve(y_test, y_prob)
+
+fpr, tpr, _ = roc_curve(
+    y_test,
+    y_prob
+)
 
 plt.figure()
-plt.plot(fpr, tpr)
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("ROC Curve")
+
+plt.plot(
+    fpr,
+    tpr
+)
+
+plt.xlabel(
+    "False Positive Rate"
+)
+
+plt.ylabel(
+    "True Positive Rate"
+)
+
+plt.title(
+    "ROC Curve - Logistic Regression"
+)
+
 plt.tight_layout()
-plt.savefig("roc_curve.png")
+
+plt.savefig(
+    "roc_curve.png"
+)
+
 plt.close()
 
 # -----------------------
-# SHAP Explainability (Fixed Properly)
+# SHAP Explainability
 # -----------------------
 
-# Convert to dense if sparse
-if hasattr(X_test_processed, "toarray"):
+if hasattr(
+    X_test_processed,
+    "toarray"
+):
     X_test_dense = X_test_processed.toarray()
 else:
     X_test_dense = X_test_processed
 
-# Get feature names after encoding
-feature_names = preprocessor.get_feature_names_out()
+explainer = shap.Explainer(
+    model,
+    X_train_resampled
+)
 
-# Use correct explainer type
-if isinstance(best_model, XGBClassifier):
-    explainer = shap.TreeExplainer(best_model)
-    shap_values = explainer.shap_values(X_test_dense)
-else:
-    explainer = shap.Explainer(best_model, X_train_resampled)
-    shap_values = explainer(X_test_dense)
+shap_values = explainer(
+    X_test_dense
+)
 
-# SHAP summary plot
+feature_names = (
+    preprocessor.get_feature_names_out()
+)
+
 plt.figure()
+
 shap.summary_plot(
     shap_values,
     X_test_dense,
     feature_names=feature_names,
     show=False
 )
+
 plt.tight_layout()
-plt.savefig("shap_summary.png")
+
+plt.savefig(
+    "shap_summary.png"
+)
+
 plt.close()
 
-print("🔥 Advanced Model Training Complete")
+print("\nModel saved successfully!")
+print("best_model.pkl")
+print("pipeline.pkl")
+print("model_metrics.pkl")
+
